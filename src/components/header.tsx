@@ -1,6 +1,6 @@
 import Image from "next/image";
 import React from "react";
-import profileLogo from "../assets/whymie logo 1.png"
+import profileLogo from "../assets/whymie-logo-1.png"
 
 const Header = () => {
   return (

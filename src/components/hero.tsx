@@ -1,6 +1,6 @@
 import Image from "next/image";
 import React from "react";
-import profilePict from "../assets/whymie logo 1.png"
+import profilePict from "../assets/whymie-logo-1.png"
 
 const Hero = () => {
   return (
