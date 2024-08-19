@@ -1,0 +1,54 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '16'
+
+    - name: Install dependencies
+      run: yarn install
+
+    - name: Build project
+      run: yarn build
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
+
+    - name: Build Docker image
+      run: docker build -t my-nextjs-app .
+
+    - name: Save Docker image as artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: my-nextjs-app
+        path: |
+          ./my-nextjs-app.tar
+
+    - name: Download Docker image artifact
+      if: always()
+      uses: actions/download-artifact@v3
+      with:
+        name: my-nextjs-app
+
+    - name: Load Docker image and deploy locally
+      run: |
+        docker load -i ./my-nextjs-app.tar
+        docker stop my-nextjs-app || true
+        docker rm my-nextjs-app || true
+        docker run -d --name my-nextjs-app -p 3000:3000 my-nextjs-app
