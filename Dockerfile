@@ -1,18 +1,20 @@
-# Stage 1: Build
-FROM node:16 AS builder
-WORKDIR /app
-COPY package.json yarn.lock ./
-RUN yarn install
-COPY . .
-RUN yarn build
+# Menggunakan Node.js sebagai base image
+FROM node:16
 
-# Stage 2: Production
-FROM node:16-alpine
+# Menentukan direktori kerja di dalam container
 WORKDIR /app
-COPY --from=builder /app/.next ./.next
-COPY --from=builder /app/public ./public
-COPY --from=builder /app/package.json ./
+
+# Menyalin file package.json dan package-lock.json ke container
+COPY package*.json ./
+
+# Menginstal dependencies
+RUN npm install
+
+# Menyalin seluruh kode aplikasi ke dalam container
+COPY . .
+
+# Mengekspos port yang digunakan aplikasi
 EXPOSE 3000
-ENV NODE_ENV production
-RUN yarn install --production
-CMD ["yarn", "start"]
+
+# Menjalankan aplikasi
+CMD ["npm", "start"]
